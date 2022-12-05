@@ -3,16 +3,16 @@
 # MySQLをデータベースに使うよ
 version: '3'
 services:
-  webapp:
+  api:
     image: golang:latest
     ports:
-      - "8080:8080"
+      - "5001:5001"
     depends_on:
       - mysql
     links:
       - mysql
     environment:
-      - PORT=8080
+      - PORT=5001
       - MYSQL_HOST=mysql
       - MYSQL_USER=root
       - MYSQL_PORT=3306
@@ -22,7 +22,14 @@ services:
       - ./:/go/src/app
     working_dir: /go/src/app
     command: go run main.go
-
+  web:
+    image: node:16
+    command: npm run serve
+    volumes:
+      - ./twitter:/app
+    ports:
+      - "8080:8080"
+    working_dir: /app
   mysql:
     image: mysql:latest
     environment:

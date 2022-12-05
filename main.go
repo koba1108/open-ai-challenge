@@ -5,15 +5,15 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	"net/http"
 	"os"
 )
 
 type Timeline struct {
 	gorm.Model
-	Name   string `json:"name" gorm:"column:name"`
 	Text   string `json:"text" gorm:"column:text"`
-	UserID int    `json:"user_id" gorm:"column:user_id"`
+	UserID int    `json:"userId" gorm:"column:user_id"`
 }
 
 func main() {
@@ -32,6 +32,12 @@ func main() {
 
 	e := echo.New()
 	e.HideBanner = true
+	// CORS
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+	}))
+
 	e.GET("/timeline", func(c echo.Context) error {
 		var timelines []Timeline
 		db.Find(&timelines)
